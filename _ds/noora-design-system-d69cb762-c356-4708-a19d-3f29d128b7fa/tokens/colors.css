@@ -1,0 +1,29 @@
+:root{
+/* base — extracted verbatim from Noora template tokens */
+--white:#fff;
+--black:#000;
+--ink:#1f1f1f;
+--gray-100:#fafafa;
+--gray-150:#f5f5f5;
+--gray-200:#f1f1f1;
+--gray-300:#e5e5e5;
+--gray-400:#d4d4d4;
+--gray-500:#999;
+--gray-600:#7a7a7a;
+--accent:#f30;
+/* semantic */
+--surface-page:var(--gray-150);
+--surface-raised:var(--gray-200);
+--surface-card:var(--white);
+--surface-inverse:#0a0a0a;
+--text-strong:var(--black);
+--text-heading:var(--ink);
+--text-body:var(--gray-600);
+--text-muted:var(--gray-500);
+--text-faint:var(--gray-400);
+--text-inverse:var(--white);
+--border-subtle:var(--gray-300);
+--accent-primary:var(--accent);
+--link:var(--black);
+--link-hover:var(--accent);
+}

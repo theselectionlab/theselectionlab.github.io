@@ -1,0 +1,25 @@
+:root{
+--font-sans:'Inter','Inter Placeholder',sans-serif;
+--font-features:"blwf" on,"cv09" on,"cv03" on,"cv04" on,"cv11" on;
+/* scale — sizes taken from template presets */
+--text-display:120px;   /* hero h1 · w600 · lh .95 · ls -.06em */
+--text-h1:56px;         /* section h2 · w600 · lh 1.1 · ls -.06em */
+--text-h2:48px;         /* big stat/quote · w600 · lh 1 · ls -.05em */
+--text-h3:32px;         /* card title · w600 · lh 1.2 · ls -.05em */
+--text-title:20px;      /* small title · w600 · lh 1.4 · ls -.04em */
+--text-body-lg:22px;    /* lede · w500 · lh 1.3 · ls -.04em */
+--text-body:18px;       /* body · w500 · lh 1.3 · ls -.04em */
+--text-body-sm:16px;    /* body small · w500 · lh 1.4 · ls -.03em */
+--text-caption:14px;    /* caption · w500 · lh 1.5 · ls -.02em */
+--text-label:13px;      /* eyebrow label · w600 · lh 1.6 · ls -.02em */
+--tracking-display:-0.06em;
+--tracking-tight:-0.05em;
+--tracking-body:-0.04em;
+--tracking-label:-0.02em;
+--weight-body:500;
+--weight-heading:600;
+--weight-bold:700;
+}
+body{font-family:var(--font-sans);font-feature-settings:var(--font-features);-webkit-font-smoothing:antialiased}
+a{color:var(--link);text-decoration:none}
+a:hover{color:var(--link-hover)}

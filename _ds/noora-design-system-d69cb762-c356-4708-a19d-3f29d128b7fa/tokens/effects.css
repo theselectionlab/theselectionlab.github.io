@@ -1,0 +1,12 @@
+:root{
+--radius-card:24px;
+--radius-input:12px;
+--radius-pill:999px;
+--avatar-ring:2.5px solid var(--white);
+--shadow-card:none; /* the brand uses flat surfaces — separation via bg contrast, not shadow */
+--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:24px;--space-6:32px;--space-7:48px;--space-8:64px;--space-9:96px;--space-10:120px;
+--page-max:1440px;
+--page-pad:40px;
+--ease-spring:cubic-bezier(.2,.7,.3,1); /* @kind other */
+--transition-fast:.2s ease-out; /* @kind other */
+}
