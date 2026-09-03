@@ -755,10 +755,11 @@ img { max-width: 100%; }
   line-height: 1.4;
   transition: border-color .2s ease-out;
 }
-.form-field input:focus,
-.form-field textarea:focus {
-  outline: none;
+.form-field input:focus-visible,
+.form-field textarea:focus-visible {
   border-color: var(--accent-primary);
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
 }
 .form-field textarea { resize: vertical; min-height: 100px; }
 .contact-form .btn { align-self: flex-start; }
