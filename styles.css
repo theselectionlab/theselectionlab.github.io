@@ -81,8 +81,8 @@ img { max-width: 100%; }
 [data-icon="arrow-up-right"] { --icon: url("assets/icons/arrow-up-right.svg"); }
 [data-icon="instagram"]      { --icon: url("assets/icons/instagram.svg"); }
 [data-icon="linkedin"]       { --icon: url("assets/icons/linkedin.svg"); }
-[data-icon="x"]              { --icon: url("assets/icons/x.svg"); }
 [data-icon="vimeo"]          { --icon: url("assets/icons/vimeo.svg"); }
+[data-icon="facebook"]       { --icon: url("assets/icons/facebook.svg"); }
 
 /* --- Buttons (DS: components/core/Button.jsx) --------------------------- */
 
@@ -464,6 +464,11 @@ img { max-width: 100%; }
   color: var(--text-body);
   text-wrap: pretty;
 }
+.prose-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
 
 /* --- Manifesto (word-by-word scroll reveal) ----------------------------- */
 
@@ -717,6 +722,48 @@ img { max-width: 100%; }
   max-width: 460px;
 }
 .contact-cta { margin-top: var(--space-6); }
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  max-width: 460px;
+}
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.form-field label {
+  font-size: var(--text-label);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-label);
+  color: var(--text-muted);
+}
+.form-field input,
+.form-field textarea {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-input);
+  padding: var(--space-3) var(--space-4);
+  background: var(--white);
+  color: var(--surface-inverse);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: var(--weight-body);
+  letter-spacing: var(--tracking-body);
+  line-height: 1.4;
+  transition: border-color .2s ease-out;
+}
+.form-field input:focus-visible,
+.form-field textarea:focus-visible {
+  border-color: var(--accent-primary);
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+.form-field textarea { resize: vertical; min-height: 100px; }
+.contact-form .btn { align-self: flex-start; }
+.form-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
 .contact-details {
   display: flex;
