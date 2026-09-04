@@ -597,6 +597,13 @@ img { max-width: 100%; }
   max-width: 640px;
   text-wrap: pretty;
 }
+.principle-break { display: none; }
+/* Force the two sentences onto their own line on desktop; on narrower
+   viewports let the paragraph wrap naturally so it doesn't overflow. */
+@media (min-width: 821px) {
+  .principle-break { display: inline; }
+  .principle-body { max-width: 700px; }
+}
 
 /* --- Team --------------------------------------------------------------- */
 
