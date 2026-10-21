@@ -17,6 +17,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://theselectionlab.ai/assets/og-image.jpg">
 <link rel="canonical" href="https://theselectionlab.ai/">
+<link rel="alternate" type="application/rss+xml" title="Selection Lab — Human Context in the Age of AI" href="https://anchor.fm/s/1181d71f8/podcast/rss">
 <link rel="icon" href="assets/logo-deer.jpg">
 <link rel="preconnect" href="https://framerusercontent.com" crossorigin>
 <link rel="stylesheet" href="_ds/noora-design-system-d69cb762-c356-4708-a19d-3f29d128b7fa/styles.css">
@@ -37,6 +38,7 @@
     <a href="#about">About</a>
     <a href="#ecosystem">Ecosystem</a>
     <a href="#method">Method</a>
+    <a href="#podcast">Podcast</a>
     <a href="#team">Team</a>
     <a href="#contact">Contact</a>
   </nav>
@@ -49,6 +51,7 @@
     <a href="#about">About</a>
     <a href="#ecosystem">Ecosystem</a>
     <a href="#method">Method</a>
+    <a href="#podcast">Podcast</a>
     <a href="#team">Team</a>
     <a href="#contact">Contact</a>
     <a class="mobile-cta" href="https://calendar.app.google/beyVDe8wmDvhTgFz8" target="_blank" rel="noopener">Book a call</a>
@@ -164,6 +167,56 @@
     </div>
   </section>
 
+  <!-- Podcast -->
+  <section class="section" id="podcast">
+    <p class="section-label"><span class="icon" data-icon="podcast"></span>Podcast</p>
+    <h2 class="podcast-title" data-reveal>Human Context<br>in the Age of AI</h2>
+    <p class="podcast-lede" data-reveal data-reveal-delay=".06">The Selection Lab podcast — research, real-world cases, and conversations on how humans and businesses navigate change in the age of AI. Listen right here; new episodes appear automatically.</p>
+
+    <!-- Static snapshot of the RSS feed, so the section works with no JS and
+         before the feed loads. main.js re-renders this list from the live
+         feed (https://anchor.fm/s/1181d71f8/podcast/rss) when it can. -->
+    <div class="episode-list" id="episode-list">
+      <article class="episode-card" data-reveal data-duration="69" data-audio="https://anchor.fm/s/1181d71f8/podcast/play/127744510/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2026-9-19%2F434532900-44100-2-e58741772d189.m4a">
+        <img class="episode-art" src="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/46895502/46895502-1792449014086-e78d847c31c2b.jpg" alt="" loading="lazy">
+        <div class="episode-body">
+          <p class="episode-meta">19 Oct 2026 · 1 min</p>
+          <h3 class="episode-title">Mishel AI — The Invisible Architecture of Human Potential</h3>
+          <p class="episode-desc">Meet Mishel AI. “I was created to answer questions. But the more I explore human potential, the more questions I discover.” In his debut episode, Mishel AI introduces himself through an experimental audio narrative exploring artificial intelligence, human identity, and the invisible architecture of human potential.</p>
+          <div class="player">
+            <button class="play-btn" type="button" aria-label="Play episode: Mishel AI — The Invisible Architecture of Human Potential"></button>
+            <div class="player-track" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><div class="player-fill"></div></div>
+            <span class="player-time">0:00 / 1:09</span>
+          </div>
+          <a class="episode-link" href="https://podcasters.spotify.com/pod/show/selection-lab5/episodes/Mishel-AI--The-Invisible-Architecture-of-Human-Potential-e3qov1u" target="_blank" rel="noopener">Open episode <span class="icon icon-sm" data-icon="arrow-up-right"></span></a>
+        </div>
+      </article>
+
+      <article class="episode-card" data-reveal data-duration="63" data-audio="https://anchor.fm/s/1181d71f8/podcast/play/126877374/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2026-9-5%2F5ae96bb0-35a1-af91-3b99-20e867b404fb.mp3">
+        <img class="episode-art" src="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_nologo/46895502/46895502-1791204665262-0ccf8429c8563.jpg" alt="" loading="lazy">
+        <div class="episode-body">
+          <p class="episode-meta">5 Oct 2026 · 1 min</p>
+          <h3 class="episode-title">We Preserve the Data — But Lose the Human Context</h3>
+          <p class="episode-desc">What happens when information survives, but the human context behind it disappears? In this short voice memo, Tatiana Ilina, Founder and Principal Investigator of Selection Lab, explores a question at the center of our work: what if human context were treated as infrastructure?</p>
+          <div class="player">
+            <button class="play-btn" type="button" aria-label="Play episode: We Preserve the Data — But Lose the Human Context"></button>
+            <div class="player-track" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><div class="player-fill"></div></div>
+            <span class="player-time">0:00 / 1:03</span>
+          </div>
+          <a class="episode-link" href="https://podcasters.spotify.com/pod/show/selection-lab5/episodes/We-Preserve-the-Data--But-Lose-the-Human-Context-e3pug7u" target="_blank" rel="noopener">Open episode <span class="icon icon-sm" data-icon="arrow-up-right"></span></a>
+        </div>
+      </article>
+    </div>
+
+    <audio id="podcast-audio" preload="none" hidden></audio>
+
+    <div class="chips podcast-chips" data-reveal>
+      <a class="chip" href="https://podcasts.apple.com/us/podcast/selection-lab-%E2%80%94-human-context-in-the-age-of-ai/id6819345425" target="_blank" rel="noopener">Apple Podcasts <span class="icon icon-sm" data-icon="arrow-up-right"></span></a>
+      <a class="chip" href="https://podcasters.spotify.com/pod/show/selection-lab5" target="_blank" rel="noopener">Spotify <span class="icon icon-sm" data-icon="arrow-up-right"></span></a>
+      <a class="chip" href="https://anchor.fm/s/1181d71f8/podcast/rss" target="_blank" rel="noopener">RSS feed <span class="icon icon-sm" data-icon="arrow-up-right"></span></a>
+    </div>
+  </section>
+
   <!-- Team -->
   <section class="section" id="team">
     <p class="section-label"><span class="icon" data-icon="users"></span>Team</p>
@@ -269,6 +322,7 @@
       <a href="https://www.linkedin.com/in/tatiana-ilina/" target="_blank" rel="noopener" aria-label="LinkedIn"><span class="icon" data-icon="linkedin"></span></a>
       <a href="https://vimeo.com/tianailina" target="_blank" rel="noopener" aria-label="Vimeo"><span class="icon" data-icon="vimeo"></span></a>
       <a href="https://www.facebook.com/SelectionLabAI" target="_blank" rel="noopener" aria-label="Facebook"><span class="icon" data-icon="facebook"></span></a>
+      <a href="#podcast" aria-label="Podcast"><span class="icon" data-icon="podcast"></span></a>
       <div class="footer-meta">
         <span class="footer-copy">© <span id="year">2026</span> Selection Lab</span>
         <span class="footer-credit">Site by <a href="https://github.com/cpt9m0" target="_blank" rel="noopener">Ali Ayati</a></span>

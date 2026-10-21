@@ -264,3 +264,291 @@ console.log(
   var year = document.getElementById('year');
   if (year) year.textContent = String(new Date().getFullYear());
 })();
+
+/* Selection Lab podcast — one shared <audio> element drives every episode
+   card. The episode list in index.html is a static snapshot of the RSS feed
+   (so it renders with no JS); this block first wires the player to that
+   snapshot, then fetches the live feed — Anchor sends
+   `Access-Control-Allow-Origin: *`, so the browser can read it directly —
+   and re-renders the list if the feed loads. New episodes therefore appear
+   on the site with no code change, and a failed fetch simply leaves the
+   snapshot in place. */
+(function () {
+  'use strict';
+
+  var FEED_URL = 'https://anchor.fm/s/1181d71f8/podcast/rss';
+  var list = document.getElementById('episode-list');
+  var audio = document.getElementById('podcast-audio');
+  if (!list || !audio) return;
+
+  var PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="#fff"/></svg>';
+  var PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" fill="#fff"/><rect x="14" y="5" width="4" height="14" rx="1" fill="#fff"/></svg>';
+
+  var currentCard = null;
+
+  /* A seek requested before the episode's metadata has loaded (duration is
+     NaN until then) is queued here and applied by the loadedmetadata
+     handler, instead of being dropped. `src` ties it to one episode so a
+     stale seek can never land on a different episode. */
+  var pendingSeek = null;
+
+  function resolveSeek(seek) {
+    if (!isFinite(audio.duration) || !audio.duration) return null;
+    var t;
+    if (seek.ratio != null) t = seek.ratio * audio.duration;
+    else if (seek.time != null) t = seek.time;
+    else t = (audio.currentTime || 0) + (seek.delta || 0);
+    return Math.max(0, Math.min(audio.duration, t));
+  }
+
+  function applyPendingSeek() {
+    if (!pendingSeek || !currentCard) return;
+    if (pendingSeek.src !== currentCard.getAttribute('data-audio')) {
+      pendingSeek = null;
+      return;
+    }
+    var t = resolveSeek(pendingSeek);
+    if (t === null) return;
+    pendingSeek = null;
+    audio.currentTime = t;
+  }
+
+  function fmtClock(sec) {
+    if (!isFinite(sec) || sec < 0) sec = 0;
+    sec = Math.floor(sec);
+    var m = Math.floor(sec / 60);
+    var s = sec % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function cardParts(card) {
+    return {
+      btn: card.querySelector('.play-btn'),
+      track: card.querySelector('.player-track'),
+      fill: card.querySelector('.player-fill'),
+      time: card.querySelector('.player-time'),
+      total: parseFloat(card.getAttribute('data-duration')) || 0
+    };
+  }
+
+  function paintCard(card) {
+    var p = cardParts(card);
+    var isCurrent = card === currentCard;
+    var playing = isCurrent && !audio.paused && !audio.ended;
+    if (p.btn) {
+      p.btn.innerHTML = playing ? PAUSE : PLAY;
+      var title = card.querySelector('.episode-title');
+      p.btn.setAttribute('aria-label',
+        (playing ? 'Pause episode: ' : 'Play episode: ') +
+        (title ? title.textContent : 'podcast episode'));
+    }
+    card.classList.toggle('is-current', isCurrent);
+    var cur = isCurrent ? audio.currentTime : 0;
+    var total = (isCurrent && isFinite(audio.duration) && audio.duration) || p.total;
+    if (p.fill) p.fill.style.width = total ? (cur / total * 100) + '%' : '0%';
+    if (p.track) p.track.setAttribute('aria-valuenow', String(total ? Math.round(cur / total * 100) : 0));
+    if (p.time) p.time.textContent = fmtClock(cur) + ' / ' + fmtClock(total);
+  }
+
+  function paintAll() {
+    Array.prototype.forEach.call(list.querySelectorAll('.episode-card'), paintCard);
+  }
+
+  function playCard(card) {
+    var src = card.getAttribute('data-audio');
+    if (!src) return;
+    if (card !== currentCard) {
+      currentCard = card;
+      pendingSeek = null;
+      audio.src = src;
+    }
+    audio.play();
+    paintAll();
+  }
+
+  list.addEventListener('click', function (e) {
+    var btn = e.target.closest('.play-btn');
+    if (btn) {
+      var card = btn.closest('.episode-card');
+      if (card === currentCard && !audio.paused) audio.pause();
+      else playCard(card);
+      paintAll();
+      return;
+    }
+    var track = e.target.closest('.player-track');
+    if (track) seekFromEvent(track.closest('.episode-card'), track, e);
+  });
+
+  list.addEventListener('keydown', function (e) {
+    var track = e.target.closest('.player-track');
+    if (!track || (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft')) return;
+    var card = track.closest('.episode-card');
+    var delta = e.key === 'ArrowRight' ? 10 : -10;
+    if (card !== currentCard) playCard(card);
+    if (isFinite(audio.duration) && audio.duration) {
+      pendingSeek = null;
+      audio.currentTime = Math.max(0, Math.min(audio.duration, audio.currentTime + delta));
+    } else {
+      /* Metadata not in yet — queue the offset (repeated presses add up)
+         and let loadedmetadata land it. */
+      var prev = (pendingSeek && pendingSeek.src === card.getAttribute('data-audio') && pendingSeek.delta != null)
+        ? pendingSeek.delta : 0;
+      pendingSeek = { src: card.getAttribute('data-audio'), delta: prev + delta };
+    }
+    e.preventDefault();
+  });
+
+  function seekFromEvent(card, track, e) {
+    var rect = track.getBoundingClientRect();
+    var ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    if (card !== currentCard) playCard(card);
+    if (isFinite(audio.duration) && audio.duration) {
+      pendingSeek = null;
+      audio.currentTime = ratio * audio.duration;
+    } else {
+      pendingSeek = { src: card.getAttribute('data-audio'), ratio: ratio };
+    }
+    paintAll();
+  }
+
+  audio.addEventListener('timeupdate', function () { if (currentCard) paintCard(currentCard); });
+  audio.addEventListener('loadedmetadata', function () {
+    applyPendingSeek();
+    if (currentCard) paintCard(currentCard);
+  });
+  audio.addEventListener('play', paintAll);
+  audio.addEventListener('pause', paintAll);
+  audio.addEventListener('ended', paintAll);
+
+  /* --- Live feed refresh -------------------------------------------------- */
+
+  function childText(el, tag) {
+    var n = el.getElementsByTagName(tag)[0];
+    return n ? n.textContent.trim() : '';
+  }
+
+  function fmtDate(rfc) {
+    var d = new Date(rfc);
+    if (isNaN(d)) return '';
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+  }
+
+  function parseDuration(raw) {
+    if (!raw) return 0;
+    var parts = raw.split(':').map(function (x) { return parseInt(x, 10) || 0; });
+    while (parts.length < 3) parts.unshift(0);
+    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  }
+
+  function fmtMetaDuration(sec) {
+    if (!sec) return '';
+    var m = Math.round(sec / 60);
+    return m + ' min';
+  }
+
+  function excerpt(htmlText) {
+    var tmp = document.createElement('div');
+    tmp.innerHTML = htmlText || '';
+    var text = (tmp.textContent || '').replace(/\s+/g, ' ').trim();
+    if (text.length <= 300) return text;
+    var cut = text.slice(0, 300);
+    return cut.slice(0, cut.lastIndexOf(' ')) + '…';
+  }
+
+  function buildCard(ep) {
+    var card = document.createElement('article');
+    card.className = 'episode-card';
+    card.setAttribute('data-audio', ep.audio);
+    if (ep.duration) card.setAttribute('data-duration', String(ep.duration));
+
+    var img = document.createElement('img');
+    img.className = 'episode-art';
+    img.src = ep.image;
+    img.alt = '';
+    img.loading = 'lazy';
+    card.appendChild(img);
+
+    var body = document.createElement('div');
+    body.className = 'episode-body';
+
+    var meta = document.createElement('p');
+    meta.className = 'episode-meta';
+    meta.textContent = [fmtDate(ep.date), fmtMetaDuration(ep.duration)].filter(Boolean).join(' · ');
+    body.appendChild(meta);
+
+    var h = document.createElement('h3');
+    h.className = 'episode-title';
+    h.textContent = ep.title;
+    body.appendChild(h);
+
+    var desc = document.createElement('p');
+    desc.className = 'episode-desc';
+    desc.textContent = excerpt(ep.description);
+    body.appendChild(desc);
+
+    var player = document.createElement('div');
+    player.className = 'player';
+    player.innerHTML =
+      '<button class="play-btn" type="button"></button>' +
+      '<div class="player-track" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><div class="player-fill"></div></div>' +
+      '<span class="player-time">0:00 / ' + fmtClock(ep.duration) + '</span>';
+    body.appendChild(player);
+
+    if (ep.link) {
+      var a = document.createElement('a');
+      a.className = 'episode-link';
+      a.href = ep.link;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.innerHTML = 'Open episode <span class="icon icon-sm" data-icon="arrow-up-right"></span>';
+      body.appendChild(a);
+    }
+
+    card.appendChild(body);
+    return card;
+  }
+
+  function refreshFromFeed() {
+    if (!window.fetch || !window.DOMParser) return;
+    fetch(FEED_URL)
+      .then(function (r) { if (!r.ok) throw new Error('feed'); return r.text(); })
+      .then(function (xmlText) {
+        var xml = new DOMParser().parseFromString(xmlText, 'text/xml');
+        if (xml.getElementsByTagName('parsererror').length) return;
+        var channel = xml.getElementsByTagName('channel')[0];
+        if (!channel) return;
+        var channelImg = channel.getElementsByTagName('itunes:image')[0];
+        var fallbackArt = channelImg ? channelImg.getAttribute('href') : '';
+        var items = Array.prototype.map.call(xml.getElementsByTagName('item'), function (item) {
+          var enc = item.getElementsByTagName('enclosure')[0];
+          var img = item.getElementsByTagName('itunes:image')[0];
+          return {
+            title: childText(item, 'title'),
+            date: childText(item, 'pubDate'),
+            link: childText(item, 'link'),
+            description: childText(item, 'description'),
+            audio: enc ? enc.getAttribute('url') : '',
+            duration: parseDuration(childText(item, 'itunes:duration')),
+            image: (img && img.getAttribute('href')) || fallbackArt
+          };
+        }).filter(function (ep) { return ep.title && ep.audio; });
+        if (!items.length) return;
+
+        var wasPlayingSrc = currentCard ? currentCard.getAttribute('data-audio') : null;
+        list.textContent = '';
+        items.forEach(function (ep) { list.appendChild(buildCard(ep)); });
+        /* If the playing episode is still in the feed, keep it marked. */
+        if (wasPlayingSrc) {
+          Array.prototype.forEach.call(list.querySelectorAll('.episode-card'), function (c) {
+            if (c.getAttribute('data-audio') === wasPlayingSrc) currentCard = c;
+          });
+        }
+        paintAll();
+      })
+      .catch(function () { /* Snapshot in the HTML stays as the fallback. */ });
+  }
+
+  paintAll();
+  refreshFromFeed();
+})();
