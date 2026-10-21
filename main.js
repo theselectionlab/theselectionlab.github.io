@@ -286,6 +286,33 @@ console.log(
 
   var currentCard = null;
 
+  /* A seek requested before the episode's metadata has loaded (duration is
+     NaN until then) is queued here and applied by the loadedmetadata
+     handler, instead of being dropped. `src` ties it to one episode so a
+     stale seek can never land on a different episode. */
+  var pendingSeek = null;
+
+  function resolveSeek(seek) {
+    if (!isFinite(audio.duration) || !audio.duration) return null;
+    var t;
+    if (seek.ratio != null) t = seek.ratio * audio.duration;
+    else if (seek.time != null) t = seek.time;
+    else t = (audio.currentTime || 0) + (seek.delta || 0);
+    return Math.max(0, Math.min(audio.duration, t));
+  }
+
+  function applyPendingSeek() {
+    if (!pendingSeek || !currentCard) return;
+    if (pendingSeek.src !== currentCard.getAttribute('data-audio')) {
+      pendingSeek = null;
+      return;
+    }
+    var t = resolveSeek(pendingSeek);
+    if (t === null) return;
+    pendingSeek = null;
+    audio.currentTime = t;
+  }
+
   function fmtClock(sec) {
     if (!isFinite(sec) || sec < 0) sec = 0;
     sec = Math.floor(sec);
@@ -332,6 +359,7 @@ console.log(
     if (!src) return;
     if (card !== currentCard) {
       currentCard = card;
+      pendingSeek = null;
       audio.src = src;
     }
     audio.play();
@@ -355,23 +383,39 @@ console.log(
     var track = e.target.closest('.player-track');
     if (!track || (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft')) return;
     var card = track.closest('.episode-card');
-    if (card !== currentCard) playCard(card);
     var delta = e.key === 'ArrowRight' ? 10 : -10;
-    if (isFinite(audio.duration)) audio.currentTime = Math.max(0, Math.min(audio.duration, audio.currentTime + delta));
+    if (card !== currentCard) playCard(card);
+    if (isFinite(audio.duration) && audio.duration) {
+      pendingSeek = null;
+      audio.currentTime = Math.max(0, Math.min(audio.duration, audio.currentTime + delta));
+    } else {
+      /* Metadata not in yet — queue the offset (repeated presses add up)
+         and let loadedmetadata land it. */
+      var prev = (pendingSeek && pendingSeek.src === card.getAttribute('data-audio') && pendingSeek.delta != null)
+        ? pendingSeek.delta : 0;
+      pendingSeek = { src: card.getAttribute('data-audio'), delta: prev + delta };
+    }
     e.preventDefault();
   });
 
   function seekFromEvent(card, track, e) {
-    if (card !== currentCard) playCard(card);
-    if (!isFinite(audio.duration) || !audio.duration) return;
     var rect = track.getBoundingClientRect();
     var ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    audio.currentTime = ratio * audio.duration;
+    if (card !== currentCard) playCard(card);
+    if (isFinite(audio.duration) && audio.duration) {
+      pendingSeek = null;
+      audio.currentTime = ratio * audio.duration;
+    } else {
+      pendingSeek = { src: card.getAttribute('data-audio'), ratio: ratio };
+    }
     paintAll();
   }
 
   audio.addEventListener('timeupdate', function () { if (currentCard) paintCard(currentCard); });
-  audio.addEventListener('loadedmetadata', function () { if (currentCard) paintCard(currentCard); });
+  audio.addEventListener('loadedmetadata', function () {
+    applyPendingSeek();
+    if (currentCard) paintCard(currentCard);
+  });
   audio.addEventListener('play', paintAll);
   audio.addEventListener('pause', paintAll);
   audio.addEventListener('ended', paintAll);
