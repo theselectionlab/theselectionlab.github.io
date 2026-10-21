@@ -70,6 +70,19 @@ import. Add them as:
 
 Any 4:5 image works; the placeholder disappears once the file loads.
 
+## Podcast section
+
+`#podcast` on the homepage lists episodes of *Human Context in the Age of AI*
+with an in-page player. The episode cards in `index.html` are a static
+snapshot of the RSS feed (https://anchor.fm/s/1181d71f8/podcast/rss), so the
+section works with no JS; `main.js` then fetches the live feed — Anchor sends
+`Access-Control-Allow-Origin: *` — and re-renders the list, so new episodes
+appear automatically. If the fetch fails, the snapshot stays. To refresh the
+snapshot by hand, copy the new episode's title, date, duration, artwork,
+description, and enclosure URL from the feed into a card, newest first.
+`/podcast` redirects to `/#podcast` (it previously redirected to Apple
+Podcasts; the Apple link now lives in the section's chips).
+
 ## Notes
 
 - The hero video is Vimeo `1219395657`, embedded in background mode. It may be
