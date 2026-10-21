@@ -62,11 +62,10 @@ in; the markup already points at these paths:
 Until they exist the header mark is invisible and the hero shows flat black
 behind the video. Nothing else is affected.
 
-Team portraits were empty `<image-slot>`s in the canvas, so there is nothing to
-import. Add them as:
+The team portrait was an empty `<image-slot>` in the canvas, so there is nothing to
+import. Add it as:
 
 - `assets/team/tatiana-ilina.jpg`
-- `assets/team/ali-ayati.jpg`
 
 Any 4:5 image works; the placeholder disappears once the file loads.
 

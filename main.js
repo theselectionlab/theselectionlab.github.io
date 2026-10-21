@@ -4,9 +4,8 @@
    scroll-in reveals, and the hero video fade. */
 
 console.log(
-  '%c Selection Lab %c\n Site by Ali Ayati — github.com/cpt9m0 ',
-  'color:#fff; background:#111; font-size:16px; font-weight:700; padding:6px 10px; border-radius:4px 4px 0 0;',
-  'color:#888; background:#111; font-size:12px; padding:4px 10px 8px; border-radius:0 0 4px 4px;'
+  '%c Selection Lab ',
+  'color:#fff; background:#111; font-size:16px; font-weight:700; padding:6px 10px; border-radius:4px;'
 );
 
 (function () {
