@@ -1,13 +1,16 @@
 # CLAUDE.md
 
-## Pull requests opened by Claude Code Action
+The shared repo rules — the Pages setup, PRs against `main`, merging as the
+deploy trigger, never self-merging — live in [AGENTS.md](AGENTS.md). Read that
+first. This file adds only what is specific to Claude.
 
-This repo is `theselectionlab/theselectionlab.github.io`, a GitHub Pages user/org
-site. `main` is the production branch — GitHub Pages serves directly from it,
-with no separate `gh-pages` or staging branch.
+## Claude Code Action
 
-- Always open pull requests **against `main`**.
-- Opening a PR does **not** deploy anything — the site only updates when a PR
-  is **merged** into `main`. Merging is the deploy trigger, so a human
-  reviewing and merging the PR is what gates any change from going live.
-- Never merge your own PR. Leave it open for human review.
+`.github/workflows/claude.yml` runs `anthropics/claude-code-action@v1` when a
+`@claude` mention lands in a new issue, an issue comment, or a PR review
+comment. That token carries `contents: write` and `pull-requests: write`, so the
+Action is technically able to merge. The rules in [AGENTS.md](AGENTS.md) say it
+must not: open the PR against `main` and stop there.
+
+If the Pages setup or the PR rules change, edit them in [AGENTS.md](AGENTS.md)
+— don't fork a second copy here.
